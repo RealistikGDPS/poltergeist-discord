@@ -1,0 +1,65 @@
+[project]
+name = "poltergeist-discord"
+version = "0.1.0"
+description = "Posts Discord webhooks for the events a Poltergeist server publishes."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "RealistikDash" }]
+requires-python = ">=3.14"
+dependencies = [
+    "gdformat>=0.2.1",
+    "httpx>=0.28.1",
+    "pydantic>=2.13.5",
+    "python-json-logger>=4.2.0",
+    "pyyaml>=6.0.3",
+    "redis>=8.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19",
+    "pre-commit>=4",
+    "ruff>=0.14",
+    "types-pyyaml>=6.0.12",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py314"
+
+[tool.ruff.lint]
+select = [
+    "A",
+    "B",
+    "C4",
+    "E",
+    "F",
+    "I",
+    "N",
+    "PERF",
+    "RUF",
+    "SIM",
+    "TID",
+    "UP",
+    "W",
+]
+ignore = [
+    "RUF012",
+]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.mypy]
+strict = true
+warn_unreachable = true
+# Packages re-export their public surface from __init__.py by plain import.
+implicit_reexport = true
+plugins = ["pydantic.mypy"]
