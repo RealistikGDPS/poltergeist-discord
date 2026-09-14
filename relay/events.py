@@ -68,6 +68,16 @@ class UserUnbanned(Event):
     actor_user_id: int
 
 
+class UserFlagged(Event):
+    kind: ClassVar[str] = "users.flagged"
+
+    flag_id: int
+    user_id: int
+    username: str
+    flag_kind: str
+    summary: str
+
+
 class LevelUploaded(Event):
     kind: ClassVar[str] = "levels.uploaded"
 
@@ -186,6 +196,7 @@ _EVENT_TYPES: dict[str, type[Event]] = {
         UserRenamed,
         UserBanned,
         UserUnbanned,
+        UserFlagged,
         LevelUploaded,
         LevelUpdated,
         LevelDeleted,

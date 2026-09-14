@@ -18,6 +18,7 @@ from relay.events import RoleRevoked
 from relay.events import ServerSettingsUpdated
 from relay.events import TimelyScheduled
 from relay.events import UserBanned
+from relay.events import UserFlagged
 from relay.events import UserRegistered
 from relay.events import UserRenamed
 from relay.events import UserUnbanned
@@ -99,6 +100,9 @@ class _Links:
 
         return self.user(actor_user_id)
 
+    def admin_flags_url(self) -> str:
+        return f"{self._site_url}/admin/flags"
+
     def admin_target(self, target_type: str, target_id: int) -> str | None:
         match target_type:
             case "user":
@@ -170,6 +174,19 @@ def _user_unbanned(event: UserUnbanned, links: _Links) -> Embed:
         fields=(
             Field("Bans lifted", str(event.revoked)),
             Field("By", links.user(event.actor_user_id)),
+        ),
+    )
+
+
+def _user_flagged(event: UserFlagged, links: _Links) -> Embed:
+    return Embed(
+        title=f"Flagged ({_label(event.flag_kind).lower()}): {_escape(event.username)}",
+        colour=_ORANGE,
+        url=links.admin_target("user", event.user_id),
+        fields=(
+            Field("Evidence", _escape(event.summary) or _NONE, inline=False),
+            Field("Flag", f"[#{event.flag_id}]({links.admin_flags_url()})"),
+            Field("Profile", links.user(event.user_id, event.username)),
         ),
     )
 
@@ -320,6 +337,8 @@ def _embed(event: Event, links: _Links) -> Embed | None:
             return _user_banned(event, links)
         case UserUnbanned():
             return _user_unbanned(event, links)
+        case UserFlagged():
+            return _user_flagged(event, links)
         case LevelUploaded() | LevelUpdated():
             return _level_uploaded(event, links)
         case LevelDeleted():

@@ -2,8 +2,9 @@
 
 Listens to the events a [Poltergeist](https://github.com/RealistikGDPS/Poltergeist)
 server publishes on Redis and posts them to Discord webhooks as embeds: new
-accounts, level uploads, ratings, dailies, bans, roles, settings changes and
-the full moderation log. Python 3.14, no database access, no ports.
+accounts, level uploads, ratings, dailies, bans, anti-cheat flags, roles,
+settings changes and the full moderation log. Python 3.14, no database
+access, no ports.
 
 Each event kind is routed to its own webhook, so a public channel can carry
 rated levels while a staff channel receives the moderation log. An event

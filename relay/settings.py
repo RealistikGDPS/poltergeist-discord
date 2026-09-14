@@ -25,6 +25,7 @@ DISCORD_WEBHOOKS = {
         "users.renamed",
         "users.banned",
         "users.unbanned",
+        "users.flagged",
         "levels.uploaded",
         "levels.updated",
         "levels.deleted",
