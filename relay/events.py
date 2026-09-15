@@ -107,6 +107,18 @@ class LevelDeleted(Event):
     actor_user_id: int
 
 
+class LevelMoved(Event):
+    kind: ClassVar[str] = "levels.moved"
+
+    level_id: int
+    level_name: str
+    from_user_id: int
+    from_username: str | None
+    to_user_id: int
+    to_username: str
+    actor_user_id: int
+
+
 class LevelRated(Event):
     kind: ClassVar[str] = "levels.rated"
 
@@ -200,6 +212,7 @@ _EVENT_TYPES: dict[str, type[Event]] = {
         LevelUploaded,
         LevelUpdated,
         LevelDeleted,
+        LevelMoved,
         LevelRated,
         TimelyScheduled,
         RoleAssigned,

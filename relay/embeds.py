@@ -8,6 +8,7 @@ from gdformat.enums import Rating
 from relay.events import Event
 from relay.events import LeaderboardsRebuilt
 from relay.events import LevelDeleted
+from relay.events import LevelMoved
 from relay.events import LevelRated
 from relay.events import LevelUpdated
 from relay.events import LevelUploaded
@@ -220,6 +221,22 @@ def _level_deleted(event: LevelDeleted, links: _Links) -> Embed:
     )
 
 
+def _level_moved(event: LevelMoved, links: _Links) -> Embed:
+    return Embed(
+        title=f"Level moved: {_escape(event.level_name)}",
+        colour=_BLURPLE,
+        fields=(
+            Field("From", links.user(event.from_user_id, event.from_username)),
+            Field("To", links.user(event.to_user_id, event.to_username)),
+            Field("ID", str(event.level_id)),
+            Field(
+                "By",
+                links.actor(event.actor_user_id, subject_user_id=event.to_user_id),
+            ),
+        ),
+    )
+
+
 def _level_rated(event: LevelRated, links: _Links) -> Embed:
     if event.rating is not Rating.NONE:
         feature = event.rating.name.capitalize()
@@ -343,6 +360,8 @@ def _embed(event: Event, links: _Links) -> Embed | None:
             return _level_uploaded(event, links)
         case LevelDeleted():
             return _level_deleted(event, links)
+        case LevelMoved():
+            return _level_moved(event, links)
         case LevelRated():
             return _level_rated(event, links)
         case TimelyScheduled():

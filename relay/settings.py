@@ -29,6 +29,7 @@ DISCORD_WEBHOOKS = {
         "levels.uploaded",
         "levels.updated",
         "levels.deleted",
+        "levels.moved",
         "levels.rated",
         "timely.scheduled",
         "roles.assigned",
