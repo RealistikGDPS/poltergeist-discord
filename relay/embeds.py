@@ -5,6 +5,9 @@ from datetime import datetime
 
 from gdformat.enums import Rating
 
+from relay.events import DemonListPlaced
+from relay.events import DemonListRecordApproved
+from relay.events import DemonListRecordSubmitted
 from relay.events import Event
 from relay.events import LeaderboardsRebuilt
 from relay.events import LevelDeleted
@@ -104,12 +107,20 @@ class _Links:
     def admin_flags_url(self) -> str:
         return f"{self._site_url}/admin/flags"
 
+    def demon_list_url(self, level_id: int) -> str:
+        return f"{self._site_url}/demonlist/{level_id}"
+
+    def admin_records_url(self) -> str:
+        return f"{self._site_url}/admin/demonlist/records"
+
     def admin_target(self, target_type: str, target_id: int) -> str | None:
         match target_type:
             case "user":
                 return f"{self._site_url}/admin/users/{target_id}"
             case "level":
                 return f"{self._site_url}/admin/levels/{target_id}"
+            case "demon_list_placement":
+                return f"{self._site_url}/admin/demonlist/{target_id}"
             case _:
                 return None
 
@@ -328,6 +339,48 @@ def _leaderboards_rebuilt(event: LeaderboardsRebuilt) -> Embed:
     )
 
 
+def _demon_list_placed(event: DemonListPlaced, links: _Links) -> Embed:
+    return Embed(
+        title=f"Demon list: #{event.position} {_escape(event.level_name)}",
+        colour=_RED,
+        url=links.demon_list_url(event.level_id),
+        fields=(
+            Field("Position", f"#{event.position}"),
+            Field("Level ID", str(event.level_id)),
+            Field("By", links.user(event.actor_user_id)),
+        ),
+    )
+
+
+def _demon_list_record_submitted(
+    event: DemonListRecordSubmitted, links: _Links
+) -> Embed:
+    return Embed(
+        title=f"Record submitted: {_escape(event.level_name)}",
+        colour=_BLURPLE,
+        url=links.admin_records_url(),
+        fields=(
+            Field("Player", links.user(event.user_id, event.username)),
+            Field("Percent", f"{event.percent}%"),
+            Field("Video", event.video_url or _NONE, inline=False),
+        ),
+    )
+
+
+def _demon_list_record_approved(event: DemonListRecordApproved, links: _Links) -> Embed:
+    return Embed(
+        title=f"Record approved: {_escape(event.level_name)}",
+        colour=_GREEN,
+        url=links.demon_list_url(event.level_id),
+        fields=(
+            Field("Player", links.user(event.user_id, event.username)),
+            Field("Percent", f"{event.percent}%"),
+            Field("Points", str(event.points)),
+            Field("By", links.user(event.actor_user_id)),
+        ),
+    )
+
+
 def _moderation_action(event: ModerationAction, links: _Links) -> Embed:
     target = f"{_label(event.target_type)} #{event.target_id}"
     target_url = links.admin_target(event.target_type, event.target_id)
@@ -374,6 +427,12 @@ def _embed(event: Event, links: _Links) -> Embed | None:
             return _server_settings_updated(event, links)
         case LeaderboardsRebuilt():
             return _leaderboards_rebuilt(event)
+        case DemonListPlaced():
+            return _demon_list_placed(event, links)
+        case DemonListRecordSubmitted():
+            return _demon_list_record_submitted(event, links)
+        case DemonListRecordApproved():
+            return _demon_list_record_approved(event, links)
         case ModerationAction():
             return _moderation_action(event, links)
         case _:

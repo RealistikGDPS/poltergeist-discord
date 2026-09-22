@@ -36,6 +36,9 @@ DISCORD_WEBHOOKS = {
         "roles.revoked",
         "server_settings.updated",
         "leaderboards.rebuilt",
+        "demon_list.placed",
+        "demon_list.record_submitted",
+        "demon_list.record_approved",
         "moderation.action",
     )
 }

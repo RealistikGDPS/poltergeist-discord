@@ -179,6 +179,41 @@ class LeaderboardsRebuilt(Event):
     users: int
 
 
+class DemonListPlaced(Event):
+    kind: ClassVar[str] = "demon_list.placed"
+
+    placement_id: int
+    level_id: int
+    level_name: str
+    position: int
+    actor_user_id: int
+
+
+class DemonListRecordSubmitted(Event):
+    kind: ClassVar[str] = "demon_list.record_submitted"
+
+    record_id: int
+    level_id: int
+    level_name: str
+    user_id: int
+    username: str
+    percent: int
+    video_url: str
+
+
+class DemonListRecordApproved(Event):
+    kind: ClassVar[str] = "demon_list.record_approved"
+
+    record_id: int
+    level_id: int
+    level_name: str
+    user_id: int
+    username: str
+    percent: int
+    points: int
+    actor_user_id: int
+
+
 class ModerationAction(Event):
     kind: ClassVar[str] = "moderation.action"
 
@@ -219,6 +254,9 @@ _EVENT_TYPES: dict[str, type[Event]] = {
         RoleRevoked,
         ServerSettingsUpdated,
         LeaderboardsRebuilt,
+        DemonListPlaced,
+        DemonListRecordSubmitted,
+        DemonListRecordApproved,
         ModerationAction,
     )
 }
