@@ -20,6 +20,7 @@ from relay.events import Received
 from relay.events import RoleAssigned
 from relay.events import RoleRevoked
 from relay.events import ServerSettingsUpdated
+from relay.events import SongUploaded
 from relay.events import TimelyScheduled
 from relay.events import UserBanned
 from relay.events import UserFlagged
@@ -119,6 +120,8 @@ class _Links:
                 return f"{self._site_url}/admin/users/{target_id}"
             case "level":
                 return f"{self._site_url}/admin/levels/{target_id}"
+            case "song":
+                return f"{self._site_url}/admin/songs/{target_id}"
             case "demon_list_placement":
                 return f"{self._site_url}/admin/demonlist/{target_id}"
             case _:
@@ -214,6 +217,20 @@ def _level_uploaded(event: LevelUploaded | LevelUpdated, links: _Links) -> Embed
             Field("Creator", links.user(event.user_id, event.username)),
             Field("ID", str(event.level_id)),
             Field("Version", str(event.version)),
+        ),
+    )
+
+
+def _song_uploaded(event: SongUploaded, links: _Links) -> Embed:
+    return Embed(
+        title=f"New song: {_escape(event.song_name)}",
+        colour=_GREEN,
+        url=links.admin_target("song", event.song_id),
+        fields=(
+            Field("Artist", _escape(event.artist_name)),
+            Field("Uploaded by", links.user(event.user_id, event.username)),
+            Field("ID", str(event.song_id)),
+            Field("Size", f"{event.size_bytes / 1_048_576:.1f} MB"),
         ),
     )
 
@@ -417,6 +434,8 @@ def _embed(event: Event, links: _Links) -> Embed | None:
             return _level_moved(event, links)
         case LevelRated():
             return _level_rated(event, links)
+        case SongUploaded():
+            return _song_uploaded(event, links)
         case TimelyScheduled():
             return _timely_scheduled(event, links)
         case RoleAssigned():

@@ -133,6 +133,17 @@ class LevelRated(Event):
     actor_user_id: int
 
 
+class SongUploaded(Event):
+    kind: ClassVar[str] = "songs.uploaded"
+
+    song_id: int
+    song_name: str
+    artist_name: str
+    user_id: int
+    username: str
+    size_bytes: int
+
+
 class TimelyScheduled(Event):
     kind: ClassVar[str] = "timely.scheduled"
 
@@ -249,6 +260,7 @@ _EVENT_TYPES: dict[str, type[Event]] = {
         LevelDeleted,
         LevelMoved,
         LevelRated,
+        SongUploaded,
         TimelyScheduled,
         RoleAssigned,
         RoleRevoked,
